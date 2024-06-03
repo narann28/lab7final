@@ -11,7 +11,7 @@ const roomHandler = require('./controllers/room');
 const app = express();
 const port = 8080;
 
-mongoose.connect('mongodb://localhost:27017/mydatabase');
+mongoose.connect('mongodb://localhost:27017/Chat');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -27,16 +27,5 @@ app.post('/create', roomHandler.createRoom);
 app.get('/:roomName', roomHandler.getRoom);
 app.get('/:roomName/messages', roomHandler.getMessages);
 app.post('/:roomName/messages', roomHandler.postMessage);
-
-const deleteAllChatrooms = async (req, res) => {
-    try {
-        await Chatroom.deleteMany({});
-        res.status(200).send('All chatrooms deleted successfully.');
-    } catch (error) {
-        res.status(500).send(error.message);
-    }
-};
-
-app.delete('/chatrooms', deleteAllChatrooms);
 
 app.listen(port, () => console.log(`Server listening on http://localhost:${port}`));

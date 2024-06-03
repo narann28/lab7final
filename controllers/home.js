@@ -1,4 +1,4 @@
-// Controller handler to handle functionality in home page
+//
 const Chatroom = require('../models/Chatroom');
 
 const getHome = async (request, response) => {

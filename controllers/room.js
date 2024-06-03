@@ -1,52 +1,51 @@
-// Controller handler to handle functionality in room page
 const Chatroom = require('../models/Chatroom');
 const Message = require('../models/Message');
-const {roomIdGenerator} = require('../util/roomIdGenerator.js');
+const { roomIdGenerator } = require('../util/roomIdGenerator.js');
 
-const createRoom = async (request, response) => {
+const createRoom = async (req, res) => {
   try {
-    const roomName = request.body.roomName || roomIdGenerator();
-    const roomId = roomIdGenerator();
+    const { roomName } = req.body;
+    const roomId = roomName || roomIdGenerator();
     const newChatroom = new Chatroom({ name: roomName, roomId });
     await newChatroom.save();
-    response.redirect(`/${newChatroom.roomId}`);
+    res.redirect(`/${newChatroom.roomId}`);
   } catch (error) {
-    response.status(500).send(error.message);
+    res.status(500).send(error.message);
   }
 };
 
-const getRoom = async (request, response) => {
+const getMessages = async (req, res) => {
   try {
-    const roomName = request.params.roomName;
+    const { roomName } = req.params;
+    const messages = await Message.find({ roomId: roomName }).sort({ createdAt: 1 });
+    res.json(messages);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+const getRoom = async (req, res) => {
+  try {
+    const { roomName } = req.params;
     const chatroom = await Chatroom.findOne({ roomId: roomName });
     if (!chatroom) {
-      return response.status(404).send('Chatroom not found');
+      return res.status(404).send('Chatroom not found');
     }
-    response.render('room', { title: 'Chatroom', roomName: chatroom.roomId });
+    res.render('room', { title: 'Chatroom', roomName: chatroom.roomId });
   } catch (error) {
-    response.status(500).send(error.message);
+    res.status(500).send(error.message);
   }
 };
 
-const getMessages = async (request, response) => {
+const postMessage = async (req, res) => {
   try {
-    const roomName = request.params.roomName;
-    const messages = await Message.find({ roomId: roomName }).sort({ createdAt: 1 });
-    response.json(messages);
-  } catch (error) {
-    response.status(500).send(error.message);
-  }
-};
-
-const postMessage = async (request, response) => {
-  try {
-    const { nickname, text } = request.body;
-    const roomName = request.params.roomName;
+    const { nickname, text } = req.body;
+    const { roomName } = req.params;
     const newMessage = new Message({ roomId: roomName, nickname, text, createdAt: new Date() });
     await newMessage.save();
-    response.status(201).json(newMessage);
+    res.status(201).json(newMessage);
   } catch (error) {
-    response.status(500).send(error.message);
+    res.status(500).send(error.message);
   }
 };
 
