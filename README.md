@@ -2,7 +2,7 @@
 
 ## Project Description
 <!-- you can include known bugs, design decisions, external references used... -->
-
+In this project, I made a chatroom application where users can create chatrooms, and join existing chatrooms. Users are free to message other people in the chatroom. For the backend I am using MongoDB.
 ## Ethics Questions
 
 ### Question 1
