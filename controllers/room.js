@@ -5,7 +5,7 @@ const { roomIdGenerator } = require('../util/roomIdGenerator.js');
 const createRoom = async (req, res) => {
   try {
     const { roomName } = req.body;
-    const roomId = roomName || roomIdGenerator();
+    const roomId = roomIdGenerator();
     const newChatroom = new Chatroom({ name: roomName, roomId });
     await newChatroom.save();
     res.redirect(`/${newChatroom.roomId}`);

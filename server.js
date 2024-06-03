@@ -11,7 +11,7 @@ const roomHandler = require('./controllers/room');
 const app = express();
 const port = 8080;
 
-mongoose.connect('mongodb://localhost:27017/Chat');
+mongoose.connect('mongodb+srv://nnath003:1234@chat.yinbwpp.mongodb.net/');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
