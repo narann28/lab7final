@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <h1>Welcome to Chatroom: {{roomName}}</h1>
+
+    <div id="messages"></div>
+
+    <input type="text" id="messageInput" placeholder="Type your message">
+    <button id="sendButton">Send</button>
+
+    <script>
+        const roomName = '{{roomName}}';
+        let nickname = '';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await fetchMessages();
+
+            nickname = prompt('Please enter your nickname');
+            if (!nickname) {
+                nickname = 'Anonymous';
+            }
+
+            setInterval(fetchMessages, 3000);
+
+            document.getElementById('sendButton').addEventListener('click', postMessage);
+        });
+
+        async function fetchMessages() {
+            try {
+                const response = await fetch(`/${roomName}/messages`);
+                const messages = await response.json();
+                const messagesDiv = document.getElementById('messages');
+                messagesDiv.innerHTML = messages.map(msg => `
+                    <div>
+                        <strong>${msg.nickname}</strong>: ${msg.text} <em>(${new Date(msg.createdAt).toLocaleTimeString()})</em>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error fetching messages:', error);
+            }
+        }
+
+        async function postMessage() {
+            const text = document.getElementById('messageInput').value;
+            if (text) {
+                try {
+                    await fetch(`/${roomName}/messages`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ nickname, text })
+                    });
+                    document.getElementById('messageInput').value = ''; 
+                    fetchMessages(); 
+                } catch (error) {
+                    console.error('Error posting message:', error);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
